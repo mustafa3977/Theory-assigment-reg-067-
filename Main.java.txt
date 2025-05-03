@@ -1,0 +1,81 @@
+package com.mycompany.studentfeedback;
+
+class Student {
+    private String name;
+    private String id;
+
+    public Student(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    public void register(RegisterUI ui) {
+        ui.processRegistration(this);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+}
+
+class RegisterUI {
+    private RegistrationHandler registrationHandler;
+
+    public RegisterUI(RegistrationHandler handler) {
+        this.registrationHandler = handler;
+    }
+
+    public void processRegistration(Student student) {
+        registrationHandler.handleRegistration(student);
+    }
+}
+
+class RegistrationHandler {
+    private RegistrationServer server;
+
+    public RegistrationHandler(RegistrationServer server) {
+        this.server = server;
+    }
+
+    public void handleRegistration(Student student) {
+        server.sendRegistrationData(student.getId(), student.getName());
+    }
+}
+
+class RegistrationServer {
+    private StudentDatabase database;
+
+    public RegistrationServer(StudentDatabase db) {
+        this.database = db;
+    }
+
+    public void sendRegistrationData(String studentId, String name) {
+        database.storeStudentData(studentId, name);
+    }
+}
+
+class StudentDatabase {
+    public void storeStudentData(String studentId, String name) {
+        System.out.println("Storing student registration: " + studentId + " - " + name);
+    }
+}
+
+public class RegisterStudentModule {
+
+    public static void main(String[] args) {
+        StudentDatabase db = new StudentDatabase();
+        RegistrationServer server = new RegistrationServer(db);
+        RegistrationHandler handler = new RegistrationHandler(server);
+        RegisterUI ui = new RegisterUI(handler);
+
+        Student student1 = new Student("Ali", "S001");
+        Student student2 = new Student("Sara", "S002");
+
+        student1.register(ui);
+        student2.register(ui);
+    }
+}
